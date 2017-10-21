@@ -445,14 +445,44 @@ namespace SDKTemplate
             }
         }
 
+
+        private void ParseCommand(string cmd)
+        {
+            List<string> cmdList = new List<string>(cmd.Split('='));
+
+            if (cmdList[0].Equals("x"))
+                bleRotationX = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("y"))
+                bleRotationY = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("z"))
+                bleRotationZ = Convert.ToInt32(cmdList[1]);
+            debugText = cmdList[0];
+        }
+
+        private int bleRotationX = 0;
+        private int bleRotationY = 0;
+        private int bleRotationZ = 0;
+        private string debugText;
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             // BT_Code: An Indicate or Notify reported that the value has changed.
             // Display the new value with a timestamp.
             var newValue = FormatValueByPresentation(args.CharacteristicValue, presentationFormat);
+
+            ParseCommand(newValue);
+
             var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
+
+            
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () => CharacteristicLatestValue.Text = message);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () => ECE4600_Plane.RotationX = bleRotationX);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () => ECE4600_Plane.RotationY = bleRotationY);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () => ECE4600_Plane.RotationZ = bleRotationZ);
+
         }
 
         private string FormatValueByPresentation(IBuffer buffer, GattPresentationFormat format)
@@ -541,6 +571,7 @@ namespace SDKTemplate
             {
                 return "Empty data received";
             }
+            return Encoding.UTF8.GetString(data);
             return "Unknown format";
         }
 
