@@ -450,18 +450,29 @@ namespace SDKTemplate
         {
             List<string> cmdList = new List<string>(cmd.Split('='));
 
-            if (cmdList[0].Equals("x"))
+            if (cmdList[0].Equals("eulerX"))
                 bleRotationX = Convert.ToInt32(cmdList[1]);
-            else if (cmdList[0].Equals("y"))
+            else if (cmdList[0].Equals("eulerY"))
                 bleRotationY = Convert.ToInt32(cmdList[1]);
-            else if (cmdList[0].Equals("z"))
+            else if (cmdList[0].Equals("eulerZ"))
                 bleRotationZ = Convert.ToInt32(cmdList[1]);
+
+            else if (cmdList[0].Equals("accelX"))
+                bleAccelX = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("accelY"))
+                bleAccelY = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("accelZ"))
+                bleAccelZ = Convert.ToInt32(cmdList[1]);
             debugText = cmdList[0];
         }
 
         private int bleRotationX = 0;
         private int bleRotationY = 0;
         private int bleRotationZ = 0;
+
+        private int bleAccelX = 0;
+        private int bleAccelY = 0;
+        private int bleAccelZ = 0;
         private string debugText;
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
@@ -482,6 +493,18 @@ namespace SDKTemplate
                 () => ECE4600_Plane.RotationY = bleRotationY);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
                 () => ECE4600_Plane.RotationZ = bleRotationZ);
+
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () => Canvas.SetLeft(ECE4600_Location, Canvas.GetLeft(ECE4600_Location) + bleAccelX));
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () => Canvas.SetTop(ECE4600_Location, Canvas.GetTop(ECE4600_Location) + bleAccelY));
+            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            //    () => ECE4600_Location.Width += 4*bleAccelZ);
+            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+            //    () => ECE4600_Location.Height += 2*bleAccelZ);
+
+
+
 
         }
 
