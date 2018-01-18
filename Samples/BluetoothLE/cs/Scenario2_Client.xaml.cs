@@ -457,12 +457,12 @@ namespace SDKTemplate
             else if (cmdList[0].Equals("eulerZ"))
                 bleRotationZ = Convert.ToInt32(cmdList[1]);
 
-            else if (cmdList[0].Equals("accelX"))
-                bleAccelX = Convert.ToInt32(cmdList[1]);
-            else if (cmdList[0].Equals("accelY"))
-                bleAccelY = Convert.ToInt32(cmdList[1]);
-            else if (cmdList[0].Equals("accelZ"))
-                bleAccelZ = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("posX"))
+                blePosX = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("posY"))
+                blePosY = Convert.ToInt32(cmdList[1]);
+            else if (cmdList[0].Equals("posZ"))
+                blePosZ = Convert.ToInt32(cmdList[1]);
             debugText = cmdList[0];
         }
 
@@ -473,6 +473,10 @@ namespace SDKTemplate
         private int bleAccelX = 0;
         private int bleAccelY = 0;
         private int bleAccelZ = 0;
+
+        private int blePosX = 0;
+        private int blePosY = 0;
+        private int blePosZ = 0;
         private string debugText;
         private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
@@ -484,24 +488,21 @@ namespace SDKTemplate
 
             var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {newValue}";
 
-            
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => CharacteristicLatestValue.Text = message);
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => ECE4600_Plane.RotationX = bleRotationX);
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => ECE4600_Plane.RotationY = bleRotationY);
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => ECE4600_Plane.RotationZ = bleRotationZ);
 
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => Canvas.SetLeft(ECE4600_Location, Canvas.GetLeft(ECE4600_Location) + bleAccelX));
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => Canvas.SetTop(ECE4600_Location, Canvas.GetTop(ECE4600_Location) + bleAccelY));
-            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-            //    () => ECE4600_Location.Width += 4*bleAccelZ);
-            //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-            //    () => ECE4600_Location.Height += 2*bleAccelZ);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                CharacteristicLatestValue.Text = message;
+
+                ECE4600_Plane.RotationX = bleRotationX;
+                ECE4600_Plane.RotationY = bleRotationY;
+                ECE4600_Plane.RotationZ = bleRotationZ;
+
+                ECE4600_Plane.LocalOffsetX = blePosX/2;
+                ECE4600_Plane.LocalOffsetY = blePosY/2;
+                ECE4600_Plane.LocalOffsetZ = blePosZ/2;
+            });
+
+
 
 
 
